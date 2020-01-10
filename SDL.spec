@@ -1,7 +1,7 @@
 Summary: A cross-platform multimedia library
 Name: SDL
 Version: 1.2.14
-Release: 6%{?dist}
+Release: 7%{?dist}.1
 # Source: http://www.libsdl.org/release/%{name}-%{version}.tar.gz
 # To create the repackaged archive use repackage.sh %{version}
 Source: %{name}-%{version}_repackaged.tar.gz
@@ -26,6 +26,7 @@ Patch7: SDL-1.2.10-GrabNotViewable.patch
 Patch8: SDL-1.2.14-no-default-backing-store.patch
 # Proposded to upstream as sdl1769
 Patch9: SDL-1.2.14-const_XData32.patch
+Patch10: SDL-1.2.14-Define__XGetRequest.patch
 
 # for _XGetRequest
 Conflicts: libX11 < 1.5
@@ -92,6 +93,7 @@ static SDL applications.
 %patch7 -p0 -b .grabnotviewable
 %patch8 -p1 -b .nobackingstore
 %patch9 -p1 -b .XData32
+%patch10 -p1 -b .Define__XGetRequest
 
 %build
 aclocal
@@ -149,6 +151,14 @@ rm -rf %{buildroot}
 %{_libdir}/lib*.a
 
 %changelog
+* Wed Nov 4 2015 Wim Taymans <wtaymans@redhat.com> - 1.2.14-7.1
+- Rebuild for z-stream
+  Resolves: #1277636
+
+* Thu Oct 1 2015 Wim Taymans <wtaymans@redhat.com> - 1.2.14-7
+- Add dynamic symbol for _XGetRequest, which libX11 1.4.99.1 added
+  Resolves: #1205603
+
 * Tue May 12 2015 Wim Taymans <wtaymans@redhat.com> - 1.2.14-6
 - Conflict with older libX11 that don't have _XGetRequest
   Resolves: #1205603
