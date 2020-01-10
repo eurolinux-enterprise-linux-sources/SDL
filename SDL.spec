@@ -1,7 +1,7 @@
 Summary: A cross-platform multimedia library
 Name: SDL
 Version: 1.2.14
-Release: 3%{?dist}
+Release: 5%{?dist}
 # Source: http://www.libsdl.org/release/%{name}-%{version}.tar.gz
 # To create the repackaged archive use repackage.sh %{version}
 Source: %{name}-%{version}_repackaged.tar.gz
@@ -22,6 +22,10 @@ Patch5: SDL-1.2.14-linux_2.6_joystick.patch
 Patch6: SDL-1.2.14-SDL_BlitCopyOverlap_memcpy.patch
 # Rejected by upstream as sdl1155, rh733605
 Patch7: SDL-1.2.10-GrabNotViewable.patch
+# Do not harness backing store by default
+Patch8: SDL-1.2.14-no-default-backing-store.patch
+# Proposded to upstream as sdl1769
+Patch9: SDL-1.2.14-const_XData32.patch
 
 URL: http://www.libsdl.org/
 License: LGPLv2+
@@ -83,6 +87,8 @@ static SDL applications.
 %patch5 -p1 -b .linux_2.6_joystick
 %patch6 -p1 -b .SDL_BlitCopyOverlap_memcpy
 %patch7 -p0 -b .grabnotviewable
+%patch8 -p1 -b .nobackingstore
+%patch9 -p1 -b .XData32
 
 %build
 aclocal
@@ -140,6 +146,15 @@ rm -rf %{buildroot}
 %{_libdir}/lib*.a
 
 %changelog
+* Fri Feb 06 2015 Wim Taymans <wtaymans@redhat.com> - 1.2.14-5
+- Rebuild for fastrack
+  Resolves: #1125304
+
+* Tue Jan 27 2015 Wim Taymans <wtaymans@redhat.com> - 1.2.14-4
+- Do not harness backing store by default
+- Adapt to libX11-1.5.99.901
+  Resolves: #1125304
+
 * Tue Jan 10 2012 Petr Pisar <ppisar@redhat.com> - 1.2.14-3
 - Fix left button press event in windowed mode (sdl894, Resolves: #640682)
 - Remove invalid configure arguments (Resolves: #640687)
