@@ -1,7 +1,7 @@
 Summary: A cross-platform multimedia library
 Name: SDL
 Version: 1.2.14
-Release: 2%{?dist}
+Release: 3%{?dist}
 # Source: http://www.libsdl.org/release/%{name}-%{version}.tar.gz
 # To create the repackaged archive use repackage.sh %{version}
 Source: %{name}-%{version}_repackaged.tar.gz
@@ -14,6 +14,14 @@ Patch0: SDL-1.2.14-byteorder.patch
 Patch1: SDL-1.2.12-multilib.patch
 Patch2: SDL-1.2.12-disable_yasm.patch
 Patch3: SDL-1.2.14-audiodriver.patch
+# From upstream <http://bugzilla.libsdl.org/show_bug.cgi?id=894>, rh640682
+Patch4: SDL-1.2.14-x11_grab_down_button.patch
+# Newer Linux has bigger structure for joystick, in upstream, sdl900, rh640694
+Patch5: SDL-1.2.14-linux_2.6_joystick.patch
+# Do not call memcpy() on overlapping areas, in upstream, sdl1090, rh678569
+Patch6: SDL-1.2.14-SDL_BlitCopyOverlap_memcpy.patch
+# Rejected by upstream as sdl1155, rh733605
+Patch7: SDL-1.2.10-GrabNotViewable.patch
 
 URL: http://www.libsdl.org/
 License: LGPLv2+
@@ -71,6 +79,10 @@ static SDL applications.
 %patch1 -p1 -b .multilib
 %patch2 -p1 -b .disable_yasm
 %patch3 -p1 -b .audiodriver
+%patch4 -p1 -b .x11_grab_down_button
+%patch5 -p1 -b .linux_2.6_joystick
+%patch6 -p1 -b .SDL_BlitCopyOverlap_memcpy
+%patch7 -p0 -b .grabnotviewable
 
 %build
 aclocal
@@ -78,9 +90,7 @@ libtoolize
 autoconf
 %configure \
    --disable-video-svga --disable-video-ggi --disable-video-aalib \
-   --disable-debug \
    --enable-sdl-dlopen \
-   --enable-dlopen \
    --enable-arts-shared \
    --enable-esd-shared \
    --enable-pulseaudio-shared \
@@ -130,6 +140,15 @@ rm -rf %{buildroot}
 %{_libdir}/lib*.a
 
 %changelog
+* Tue Jan 10 2012 Petr Pisar <ppisar@redhat.com> - 1.2.14-3
+- Fix left button press event in windowed mode (sdl894, Resolves: #640682)
+- Remove invalid configure arguments (Resolves: #640687)
+- Kernel joystick structure has grown in unknown 2.6 Linux version (sdl900,
+  Resolves: #640694)
+- Do not call memcpy() on overlapping areas (sdl1090, Resolves: #678569)
+- Don't block SDL_WM_GrabInput() if window is not viewable (sdl1155,
+  Resolves: #733605)
+
 * Tue Aug 03 2010 Petr Pisar <ppisar@redhat.com> - 1.2.14-2
 - Remove src/joystick/darwin/10.3.9-FIX/IOHIDLib.h because of license
   (bug #619907)
